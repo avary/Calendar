@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+    <head>
+        <title></title>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+        <link rel="stylesheet" type="text/css" media="screen" href="@{'/public/stylesheets/main.css'}">
+        <script src="http://maps.google.com/maps/api/js?sensor=false&language=fr"
+        type="text/javascript"></script>
+        <script type="text/javascript" src="@{'/public/javascripts/locationSettings.js'}"></script>
+        <script type="text/javascript" src="@{'/public/javascripts/cookies.js'}"></script>
+        <script src="@{'/public/javascripts/jquery-1.4.2.min.js'}" type="text/javascript" charset="utf-8"></script>
+    </head>
+
+    <body onLoad="loadParams()">
+        <table cellpadding="0" cellspacing="0">
+            <tr>
+                <td>
+
+                    Choisissez votre localité en choisissant votre Pays, ensuite votre ville. <br/><em><strong>
+                            Exemple :</strong></em> 'France, Paris' ou 'Belgique, Bruxelles'.
+                    Choisissez également votre fuseau Horaire.<br/> <em><strong>Exemple</strong></em>
+                    pour la France et la Belgique : GMT + 1 Heures d'Hivert
+                    ou GMT + 2 Heures d'été. Les paramètres resteront engistrés sur votre ordinateur.
+
+                </td>
+            </tr>
+        </table>
+        <br>
+        <table border="0">
+            <tr>
+                <td align="right" >
+                    Adresse :
+                </td>
+
+                <td>
+                    <form action="" onSubmit="codeAddress();return false;">
+                        <INPUT type="text" id="address" size="35"/>
+                        <input type="submit" value="Localisez" />
+                    </form>
+                </td>
+
+            </tr>
+
+            <tr >
+                <td colspan="2">
+                    <div style="display: none" id="resContainer">
+                        <strong>Propositions : </strong><br/><br/>
+                        <div id="results" style="width: 760px;">
+
+                        </div>
+                        <br/>
+                    </div>
+
+                </td>
+            </tr>
+
+
+            <tr>
+                <td colspan="2">
+                    <div id="map" align="center" style="width: 760px; height: 450px"></div>
+                </td>
+            </tr>
+
+            <tr>
+                <td align="right" width="140px">
+                    Fuseau horaire :
+                </td>
+                <td>
+                    <select id="timeZoneList" type="text" height="26" >
+                        <option value="-780">GMT-13:00</option>
+                        <option value="-750">GMT-12:30</option>
+                        <option value="-720">GMT-12:00</option>
+                        <option value="-690">GMT-11:30</option>
+
+                        <option value="-660">GMT-11:00</option>
+                        <option value="-630">GMT-10:30</option>
+                        <option value="-600">GMT-10:00</option>
+                        <option value="-570">GMT-09:30</option>
+                        <option value="-540">GMT-09:00</option>
+                        <option value="-510">GMT-08:30</option>
+                        <option value="-480">GMT-08:00</option>
+                        <option value="-450">GMT-07:30</option>
+                        <option value="-420">GMT-07:00</option>
+
+                        <option value="-390">GMT-06:30</option>
+                        <option value="-360">GMT-06:00</option>
+                        <option value="-330">GMT-05:30</option>
+                        <option value="-300">GMT-05:00</option>
+                        <option value="-270">GMT-04:30</option>
+                        <option value="-240">GMT-04:00</option>
+                        <option value="-210">GMT-03:30</option>
+                        <option value="-180">GMT-03:00</option>
+                        <option value="-150">GMT-02:30</option>
+
+                        <option value="-120">GMT-02:00</option>
+                        <option value="-90">GMT-01:30</option>
+                        <option value="-60">GMT-01:00</option>
+                        <option value="-30">GMT-00:30</option>
+                        <option value="00:00" selected="true">GMT</option>
+                        <option value="30">GMT+00:30</option>
+                        <option value="60">GMT+01:00</option>
+                        <option value="90">GMT+01:30</option>
+                        <option value="120">GMT+02:00</option>
+
+                        <option value="150">GMT+02:30</option>
+                        <option value="180">GMT+03:00</option>
+                        <option value="210">GMT+03:30</option>
+                        <option value="240">GMT+04:00</option>
+                        <option value="270">GMT+04:30</option>
+                        <option value="300">GMT+05:00</option>
+                        <option value="330">GMT+05:30</option>
+                        <option value="360">GMT+06:00</option>
+                        <option value="390">GMT+06:30</option>
+
+                        <option value="420">GMT+07:00</option>
+                        <option value="450">GMT+07:30</option>
+                        <option value="480">GMT+08:00</option>
+                        <option value="510">GMT+08:30</option>
+                        <option value="540">GMT+09:00</option>
+                        <option value="570">GMT+09:30</option>
+                        <option value="600">GMT+10:00</option>
+                        <option value="630">GMT+10:30</option>
+                        <option value="660">GMT+11:00</option>
+
+                        <option value="690">GMT+11:30</option>
+                        <option value="720">GMT+12:00</option>
+                        <option value="750">GMT+12:30</option>
+                        <option value="780">GMT+13:00</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">
+                    Maraja :
+                </td>
+                <td>
+                    <select id="marajaList">
+                        <option value="khamenei">Sayid Khamenei</option>
+                        <option value="sistani">Sayid Sistani</option>
+                        <option value="fahdallah">Sayid Fahdallah</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2" align="right">
+                    <INPUT type="button" id="finishBtn" value="Sauvegarder" onClick="save()"/>
+                </td>
+            </tr>
+        </table>
+        <script type="text/javascript">
+            var homePageURL = "@{Application.index()}";
+        </script>
+    </body>
+</html>

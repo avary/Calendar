@@ -1,0 +1,105 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+Vous pouvez configurer ce calendrier en cliquant ici : <a href="" onclick="changesettings();return false;">Configuration</a>
+<br/><br/>
+<style type="text/css">
+    #calendar tr td{
+        border:1px #e5e5e5 solid;
+        padding-left: 10px;
+        padding-right: 10px;
+        text-align: center;
+    }
+</style>
+
+#{if calItems.size() > 0}
+<table id="calendar" style="border-collapse: collapse;color: #000000;" cellpadding="5" cellspacing="0">
+    <tr>
+        <td colspan="8" style="border: 0px black solid;">
+            ${adr.raw()}<br/>
+            <a href="@{Application.index(monthNumber,-1)}">&lt;</a>
+            &nbsp;${month.capFirst()} - ${year}&nbsp;
+            <a href="@{Application.index(monthNumber,1)}">&gt;</a>
+            <br/><br/>
+        </td>
+    </tr>
+    <tr style="color:#FFFFFF;background:#2e2e2e">
+        <td style="font-weight:bold;" colspan="2">
+            ${month}
+        </td>
+        <td style="font-weight:bold;width:70px" >
+            Fajr
+        </td>
+        <td style="font-weight:bold;" >
+            L. de soleil
+        </td>
+        <td style="font-weight:bold;width:70px" >
+            Dhuhr
+        </td>
+        <td style="font-weight:bold;" >
+            Maghrib
+        </td>
+        <td style="font-weight:bold;" >
+            Minuit
+        </td>
+        <td style="font-weight:bold;" >
+            Hégirien
+        </td>
+    </tr>
+    #{list items:calItems,as:'c'}
+    <tr>
+        <td style="text-align: left">
+            ${c.weekDay.capFirst()}
+        </td>
+        <td>
+            ${c_index}
+        </td>
+        <td>
+            ${c.fajr}
+        </td>
+        <td>
+            ${c.sunrise}
+        </td>
+        <td>
+            ${c.duhr}
+        </td>
+        <td>
+            ${c.maghrib}
+        </td>
+        <td>
+            ${c.midnight}
+        </td>
+        <td>
+            ${c.hijriDay}
+        </td>
+
+    </tr>
+    #{/list}
+    <tr style="color:#FFFFFF;background:#2e2e2e">
+        <td style="font-weight:bold;" colspan="2">
+            ${month}
+        </td>
+        <td style="font-weight:bold;width:70px" >
+            Fajr
+        </td>
+        <td style="font-weight:bold;" >
+            L. de soleil
+        </td>
+        <td style="font-weight:bold;width:70px" >
+            Dhuhr
+        </td>
+        <td style="font-weight:bold;" >
+            Maghrib
+        </td>
+        <td style="font-weight:bold;" >
+            Minuit
+        </td>
+        <td style="font-weight:bold;" >
+            Hégirien
+        </td>
+    </tr>
+</table>
+#{/if}
+#{else}
+Vous devez d'abord configurer le calendrier.
+#{/else}
