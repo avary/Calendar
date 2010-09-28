@@ -18,6 +18,6 @@ public class CalendarItem {
     public String maghrib;
     public String midnight;
     public int hijriDay;
-    public int hijriMonth;
+    public String hijriMonth;
 
 }

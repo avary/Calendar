@@ -17,6 +17,9 @@ import utils.PrayTime;
 
 public class Application extends Controller {
 
+    public static String islamMonth [] = {"Muharram","Safar","Rabi'El Awwal","Rabi'At Thani","Joumada El Awwal","Joumada At Thani","Rajab",
+    "Sha'ban","Ramadan","Shawwal","Dhoul Qa'da","Dhoul Hijja"};
+
     public static void index(int monthNumber,int page) {
         
         Http.Cookie timeZone = request.cookies.get("timeZone");
@@ -26,6 +29,9 @@ public class Application extends Controller {
 
         List<CalendarItem> calItems = new ArrayList<CalendarItem>();
         GregorianCalendar d = new GregorianCalendar();
+
+        int today = d.get(Calendar.DAY_OF_MONTH);
+        int currentMonth = d.get(Calendar.MONTH);
 
         if(page != 0){
             d.set(Calendar.MONTH, monthNumber+page);
@@ -66,7 +72,7 @@ public class Application extends Controller {
                 c.maghrib = times[5];
                 c.midnight = times[7];
                 c.hijriDay = dtIslamic.getDayOfMonth();
-                c.hijriMonth = dtIslamic.getMonthOfYear();
+                c.hijriMonth = Application.islamMonth[dtIslamic.getMonthOfYear()-1];
                 calItems.add(c);
 
                 day++;
@@ -75,7 +81,7 @@ public class Application extends Controller {
                 dtIslamic = dtISO.withChronology(IslamicChronology.getInstance());
             }
         }
-        render(calItems,month,monthNumber,year,adr);
+        render(calItems,month,monthNumber,year,adr,today,currentMonth);
     }
 
     public static void changeLocation() {

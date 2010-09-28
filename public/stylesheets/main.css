@@ -7,7 +7,7 @@ body {
     margin: 0;
     padding: 1em; /* Remettre à zéro si nécessaire. */
     font-family:  Arial, Helvetica, FreeSans, sans-serif;
-    font-size: .8em; /* À adapter pour la police choisie. (3) */
+    font-size: .9em; /* À adapter pour la police choisie. (3) */
     line-height: 1.4; /* À adapter au design. (4) */
     color: black;
 }
