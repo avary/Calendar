@@ -19,5 +19,6 @@ public class CalendarItem {
     public String midnight;
     public int hijriDay;
     public String hijriMonth;
+    public Event event;
 
 }

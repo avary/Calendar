@@ -1,0 +1,17 @@
+Maraja(m1):
+  name: Sayid Khamenei
+  days: 0
+
+Maraja(m2):
+  name: Sayid Fahdallah
+  days: 1
+
+Maraja(m3):
+  name: Sayid Sistani
+  days: -1
+
+Event(e1):
+  day: 1
+  month: 10
+  name: Aid
+  link: http://al-imane.org

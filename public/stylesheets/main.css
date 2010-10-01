@@ -22,7 +22,6 @@ h1, h2, h3, h4, h5, h6 {
 }
 h1 {
     font-size: 1.5em;
-    border-bottom: 1px #DCC372 solid;
 }
 h2 {
     font-size: 1.5em;
@@ -82,4 +81,23 @@ table{
     font-family:  Arial, Helvetica, FreeSans, sans-serif;
     font-size: 1.1em; /* À adapter pour la police choisie. (3) */
     color: black;
+}
+
+.list tr td{
+    border:1px #e5e5e5 solid;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.list tr th{
+    border:1px #e5e5e5 solid;
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: center;
+}
+
+.list{
+    border-collapse: collapse;
+    color: #000000;
+
 }

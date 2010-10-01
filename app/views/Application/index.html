@@ -75,17 +75,20 @@ Vous pouvez configurer ce calendrier en cliquant ici : <a href="" onclick="chang
         </td>
     </tr>
     #{list items:calItems,as:'c'}
-    #{if c_index == today && currentMonth == monthNumber}
+    #{if c.event}
+    <tr class="event">
+    #{/if}
+    #{elseif c_index == today && currentMonth == monthNumber}
     <tr class="today">
-        #{/if}
+        #{/elseif}
         #{else}
     <tr class="tr_${c_parity}">
 
         #{/else}
-        <td style="text-align: left">
+        <td style="text-align: left" ${c.event == null?"":"rowspan='2'"}>
             ${c.weekDay.capFirst()}
         </td>
-        <td>
+        <td ${c.event == null?"":"rowspan='2'"}>
             ${c_index}
         </td>
         <td>
@@ -103,7 +106,7 @@ Vous pouvez configurer ce calendrier en cliquant ici : <a href="" onclick="chang
         <td>
             ${c.midnight}
         </td>
-        <td>
+        <td ${c.event == null?"":"rowspan='2'"}>
             ${c.hijriDay}
             #{if c.hijriDay == 1 || c_isFirst}
             &nbsp;-&nbsp;${c.hijriMonth}
@@ -112,6 +115,13 @@ Vous pouvez configurer ce calendrier en cliquant ici : <a href="" onclick="chang
         </td>
 
     </tr>
+    #{if c.event}
+    <tr class="eventName">
+        <td colspan="5">
+            ${c.event.name}
+        </td>
+    </tr>
+    #{/if}
     #{/list}
     <tr class="title">
         <td  colspan="2">

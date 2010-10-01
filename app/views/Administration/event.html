@@ -1,0 +1,103 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+<ul style="list-style: none">
+    <li style="float: left;padding-right: 10px;">
+        <a href="@{Application.index()}">Calendrier</a>
+    </li>
+    <li style="float: left;padding-right: 10px;">
+        <a href="@{Administration.index()}">Marajas</a>
+    </li>
+    <li style="float: left;padding-right: 10px;">
+        <a href="@{Administration.event()}">Evénements</a>
+    </li>
+</ul>
+
+<br/><br/>
+<div style="text-align: left">
+    <h1>Evénements</h1>
+    <a href="#" onclick="$('#newEvent').slideToggle('slow');return false;">Nouveau événement</a>
+    <div id="newEvent" style="display: none">
+        <form action="@{Events.save()}" method="post">
+            <p class="field">
+                <label>Date : </label> <input type="text" name="event.day" value="" style="width: 40px;"/>
+                <select name="event.month">
+                    #{list items:0..11,as:'i'}
+                    <option value="${i+1}">${islamMonth[i]}</option>
+                    #{/list}
+                </select>
+            </p>
+            <p  class="field">
+                <label>Nom : </label><input type="text" name="event.name" value=""/>
+            </p>
+            <p  class="field">
+                <label>Lien : </label><input type="text" name="event.link" value="" style="width: 500px;"/>
+            </p>
+            <input type="submit" name="save" value="Ajouter"/>
+        </form>
+        <br/>
+    </div>
+    <br/><br/>
+    <table class="list">
+        <tr>
+            <th>
+                Date
+            </th>
+
+            <th>
+                Nom
+            </th>
+            <th>
+                Lien
+            </th>
+            <th>
+
+            </th>
+        </tr>
+        #{list items:events}
+        <tr>
+            <td>
+                ${_.day} - ${islamMonth[_.month-1]}
+            </td>
+            <td>
+                ${_.name}
+            </td>
+            <td>
+                <a href="${_.link}">${_.link}</a>
+            </td>
+            <td>
+                <a href="#" onclick="$('#event_${_.id}').toggle();return false;">
+                    <img src="@{'/public/images/edit.png'}" alt="Modifier cet événement" title="Modifier cet événement"/>
+                </a>
+                <a href="@{Events.delete(_.id)}" onclick="return confirm('Etes vous sur de vouloir effacer cet événement?');">
+                    <img src="@{'/public/images/delete.png'}" alt="Supprimer cet événement" title="Supprimer cet événement"/>
+                </a>
+            </td>
+        </tr>
+        <tr id="event_${_.id}" style="display: none">
+            <td colspan="5">
+                <form action="@{Events.save()}" method="post">
+                    <p class="field">
+                        <input type="hidden" name="event.id" value="${_.id}"/>
+                        <label>Date : </label> <input type="text" name="event.day" value="${_.day}" style="width: 40px;"/>
+                        <select name="event.month">
+                            #{list items:0..11,as:'i'}
+                            <option value="${i+1}" ${_.month == (i+1)?"selected=selected":''}>${islamMonth[i]}</option>
+                            #{/list}
+                        </select>
+                    </p>
+                    <p  class="field">
+                        <label>Nom : </label><input type="text" name="event.name" value="${_.name}"/>
+                    </p>
+                    <p  class="field">
+                        <label>Lien : </label><input type="text" name="event.link" value="${_.link}" style="width: 500px;"/>
+                    </p>
+                    <input type="submit" name="save" value="Sauvegarder"/>
+                </form>
+            </td>
+        </tr>
+
+        #{/list}
+    </table>
+</div>
+

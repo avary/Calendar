@@ -1,0 +1,42 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+<ul style="list-style: none">
+    <li style="float: left;padding-right: 10px;">
+        <a href="@{Application.index()}">Calendrier</a>
+    </li>
+    <li style="float: left;padding-right: 10px;">
+        <a href="@{Administration.index()}">Marajas</a>
+    </li>
+    <li style="float: left;padding-right: 10px;">
+        <a href="@{Administration.event()}">Evénements</a>
+    </li>
+</ul>
+
+<br/><br/>
+
+Date islamique par defaut : ${today.islamFormat()}
+<form action="@{Marajas.saveDays()}">
+    <table>
+        <tr>
+            #{list items:marajas}
+            <td style="width: 250px">
+                <p><strong>${_.name}</strong></p>
+                <p>${_.today.islamFormat()}</p><br/>
+                Décalage : <select name="days">
+                    #{list items:-4..4, as:'i'}
+                    <option value="${i}" ${i == _.days?"selected='selected'":""}>${i}</option>
+                    #{/list}
+
+                </select>
+                <input type="hidden" name="id" value="${_.id}"/>
+            </td>
+            #{/list}
+        </tr>
+        <tr>
+            <td colspan="${marajas.size()}" align="center">
+                <input type="submit" name="save" value="Sauvegarder"/>
+            </td>
+        </tr>
+    </table>
+</form>

@@ -118,12 +118,8 @@ function codeAddress() {
 
 function save() {
 
-    var timeZoneList = document.getElementById('timeZoneList');
-    var marajaList = document.getElementById('marajaList');
-    var address = document.getElementById('address');
-
-    setCookie('timeZone', timeZoneList.options[timeZoneList.selectedIndex].value, 365, '/', '', '');
-    setCookie('maraja', marajaList.options[marajaList.selectedIndex].value, 365, '/', '', '');
+    setCookie('timeZone', $('#timeZoneList').val(), 365, '/', '', '');
+    setCookie('maraja', $('#marajaList').val(), 365, '/', '', '');
     var lat = marker.getPosition().lat();
     var lng = marker.getPosition().lng();
     setCookie('longitude', lng, expirationDays, '/', '', '');

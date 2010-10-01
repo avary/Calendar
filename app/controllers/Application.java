@@ -7,11 +7,15 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import models.CalendarItem;
+import models.Event;
+import models.Maraja;
 import org.joda.time.DateTime;
 import org.joda.time.chrono.IslamicChronology;
+import play.cache.Cache;
 import play.mvc.*;
 import utils.PrayTime;
 
@@ -26,6 +30,7 @@ public class Application extends Controller {
         Http.Cookie latitude = request.cookies.get("latitude");
         Http.Cookie longitude = request.cookies.get("longitude");
         Http.Cookie address = request.cookies.get("address");
+        Http.Cookie maraja = request.cookies.get("maraja");
 
         List<CalendarItem> calItems = new ArrayList<CalendarItem>();
         GregorianCalendar d = new GregorianCalendar();
@@ -42,7 +47,10 @@ public class Application extends Controller {
         String month = d.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.FRENCH);
         String adr = null;
         
-        if (timeZone != null && latitude != null && longitude != null && address != null) {
+        if (timeZone != null && latitude != null && longitude != null && address != null
+                && maraja != null) {
+
+            Map<String,Event> ev = (Map<String, Event>) Cache.get("event");
             double lon = Double.parseDouble(longitude.value);
             double lat = Double.parseDouble(latitude.value);
             double t = Double.parseDouble(timeZone.value) / 60.0;
@@ -56,7 +64,9 @@ public class Application extends Controller {
             int day = 1;
             d.set(Calendar.DAY_OF_MONTH, day);
 
-            DateTime dtISO = new DateTime(d.getTimeInMillis());
+            Maraja m = Maraja.findById(Long.parseLong(maraja.value));
+
+            DateTime dtISO = new DateTime(d.getTimeInMillis() + (m.days * 86400000));
             DateTime dtIslamic = dtISO.withChronology(IslamicChronology.getInstance());
 
             PrayTime p = new PrayTime();
@@ -73,11 +83,12 @@ public class Application extends Controller {
                 c.midnight = times[7];
                 c.hijriDay = dtIslamic.getDayOfMonth();
                 c.hijriMonth = Application.islamMonth[dtIslamic.getMonthOfYear()-1];
+                c.event = ev.get(dtIslamic.getDayOfMonth()+":"+dtIslamic.getMonthOfYear());
                 calItems.add(c);
 
                 day++;
                 d.set(Calendar.DAY_OF_MONTH, day);
-                dtISO = new DateTime(d.getTimeInMillis());
+                dtISO = new DateTime(d.getTimeInMillis()+ (m.days * 86400000));
                 dtIslamic = dtISO.withChronology(IslamicChronology.getInstance());
             }
         }
@@ -85,6 +96,14 @@ public class Application extends Controller {
     }
 
     public static void changeLocation() {
-        render();
+        List<Maraja> marajas = Maraja.all().fetch();
+
+        for (Maraja maraja : marajas) {
+            DateTime dtISO = new DateTime(new GregorianCalendar().getTimeInMillis() + (maraja.days * 86400000));
+            DateTime dtIslamic = dtISO.withChronology(IslamicChronology.getInstance());
+            maraja.today = dtIslamic;
+        }
+
+        render(marajas);
     }
 }

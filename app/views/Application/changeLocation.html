@@ -135,9 +135,12 @@
                 </td>
                 <td>
                     <select id="marajaList">
-                        <option value="khamenei">Sayid Khamenei</option>
-                        <option value="sistani">Sayid Sistani</option>
-                        <option value="fahdallah">Sayid Fahdallah</option>
+                        #{list items:marajas}
+
+                        <option value="${_.id}">${_.name}</option>
+
+                        #{/list}
+
                     </select>
                 </td>
             </tr>
