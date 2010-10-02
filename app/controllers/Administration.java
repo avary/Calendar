@@ -8,6 +8,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import models.Event;
 import models.Maraja;
+import models.Newsletter;
 import org.joda.time.DateTime;
 import org.joda.time.chrono.IslamicChronology;
 import play.mvc.Controller;
@@ -37,5 +38,11 @@ public class Administration extends Controller {
         String islamMonth [] = {"Muharram","Safar","Rabi'El Awwal","Rabi'At Thani","Joumada El Awwal","Joumada At Thani","Rajab",
     "Sha'ban","Ramadan","Shawwal","Dhoul Qa'da","Dhoul Hijja"};
         render(events,islamMonth);
+    }
+
+    public static void newsletters(){
+        List<Maraja> marajas = Maraja.all().fetch();
+        List<Newsletter> newsletters = Newsletter.find("order by email").fetch();
+        render(newsletters,marajas);
     }
 }

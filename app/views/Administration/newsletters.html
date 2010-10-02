@@ -1,0 +1,127 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+<ul style="list-style: none">
+    <li style="float: left;padding-right: 10px;">
+        <a href="@{Application.index()}">Calendrier</a>
+    </li>
+    <li style="float: left;padding-right: 10px;">
+        <a href="@{Administration.index()}">Marajas</a>
+    </li>
+    <li style="float: left;padding-right: 10px;">
+        <a href="@{Administration.event()}">Evénements</a>
+    </li>
+    <li style="float: left;padding-right: 10px;">
+        <a href="@{Administration.newsletters()}">Newsletters</a>
+    </li>
+</ul>
+
+<br/><br/>
+<div style="text-align: left">
+    <h1>Newsletters</h1>
+
+    #{if flash.success}
+    <p>${flash.success}</p>
+    #{/if}
+    <table class="list">
+        <tr>
+            <th>
+                Email
+            </th>
+
+            <th>
+                Maraja
+            </th>
+            <th>
+                Jour d'envoi
+            </th>
+            <th>
+                Email validé
+            </th>
+            <th>
+
+            </th>
+        </tr>
+        #{list items:newsletters}
+        <tr>
+            <td>
+                ${_.email}
+            </td>
+            <td>
+                ${_.maraja.name}
+            </td>
+            <td>
+                #{if _.beforeDay == 0}
+                le jour même
+                #{/if}
+                #{if _.beforeDay == -1}
+                1 jour à l'avance
+                #{/if}
+                #{if _.beforeDay == -2}
+                2 jours à l'avance
+                #{/if}
+                #{if _.beforeDay == -3}
+                3 jours à l'avance
+                #{/if}
+                #{if _.beforeDay == -7}
+                1 semaine à l'avance
+                #{/if}
+            </td>
+            <td align="center">
+                #{if _.enabled}
+                     <img src="@{'/public/images/enabled.png'}" alt="Valide" title="Adresse email valide"
+                          width="22" height="22"/>
+                #{/if}
+                #{else}
+                <img src="@{'/public/images/disabled.png'}" alt="Invalide" title="Adresse email invalide"
+                          width="22" height="22"/>
+                #{/else}
+            </td>
+            <td>
+                <a href="#" onclick="$('#newsletter_${_.id}').toggle();return false;">
+                    <img src="@{'/public/images/edit.png'}" alt="Modifier" title="Modifier"/>
+                </a>
+                <a href="@{Newsletters.delete(_.id)}" onclick="return confirm('Etes vous sur de vouloir le supprimer?');">
+                    <img src="@{'/public/images/delete.png'}" alt="Supprimer" title="Supprimer"/>
+                </a>
+            </td>
+        </tr>
+
+        <tr id="newsletter_${_.id}" style="display: none">
+            <td colspan="5">
+                <form action="@{Newsletters.save()}" method="post">
+                    <p class="field">
+                        <input type="hidden" name="n.id" value="${_.id}"/>
+                        <label>Votre email : </label>
+                        <input type="text" name="n.email" value="${_.email}"/>
+                    </p>
+                    <p class="field">
+                        <label>Maraja : </label>
+                        <select name="n.maraja.id">
+                            #{list items:marajas,as:'m'}
+
+                            <option value="${m.id}" ${_.maraja.id == m.id?"selected='selected'":""}>${m.name}</option>
+
+                            #{/list}
+
+                        </select>
+                    </p>
+                    <p class="field">
+                        <label>Jour d'envoi : </label>
+                        <select name="n.beforeDay">
+                            <option value="0" ${_.beforeDay == 0?"selected='selected'":""}>le jour même</option>
+                            <option value="1" ${_.beforeDay == -1?"selected='selected'":""}>1 jour à l'avance</option>
+                            <option value="2" ${_.beforeDay == -2?"selected='selected'":""}>2 jours à l'avance</option>
+                            <option value="3" ${_.beforeDay == -3?"selected='selected'":""}>3 jours à l'avance</option>
+                            <option value="7" ${_.beforeDay == -7?"selected='selected'":""}>1 semaine à l'avance</option>
+                        </select>
+                    </p>
+                    <input type="submit" name="save" value="Sauvegarder"/>
+
+                </form>
+            </td>
+        </tr>
+
+        #{/list}
+    </table>
+</div>
