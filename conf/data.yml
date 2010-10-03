@@ -53,8 +53,8 @@ Event(e7):
   link: http://al-imane.org
 
 Newsletter(n1):
-  email: ricardo@gmail.com
+  email: ricardo.bresil@gmail.com
   maraja: m1
-  beforeDay: 7
+  beforeDay: 1
   enabled: true
   confirm: gvedvzrfvytvervfevryy

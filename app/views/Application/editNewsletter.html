@@ -1,0 +1,28 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+#{if flash.success}
+<p>${flash.success}</p>
+#{/if}
+
+#{if flash.error}
+<p>${flash.error}</p>
+#{/if}
+
+<h1>Modifications des options d'envoi</h1>
+<form action="@{Application.saveNewsletter()}" method="post">
+    <input type="hidden" name="confirm" value="${confirm}"/>
+    <input type="hidden" name="newsletter.id" value="${n.id}"/>
+    <p class="field">
+        <label>Recevoir l'événement : </label>
+        <select name="newsletter.beforeDay">
+            <option value="0" ${n.beforeDay == 0?"selected='selected'":""}>le jour même</option>
+            <option value="1" ${n.beforeDay == 1?"selected='selected'":""}>1 jour à l'avance</option>
+            <option value="2" ${n.beforeDay == 2?"selected='selected'":""}>2 jours à l'avance</option>
+            <option value="3" ${n.beforeDay == 3?"selected='selected'":""}>3 jours à l'avance</option>
+            <option value="7" ${n.beforeDay == 7?"selected='selected'":""}>1 semaine à l'avance</option>
+        </select>
+    </p>
+    <input type="submit" name="save" value="Sauvegarder"/>
+
+</form>

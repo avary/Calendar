@@ -1,5 +1,6 @@
 package controllers;
 
+import com.mchange.v2.lang.Coerce;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -13,19 +14,21 @@ import java.util.logging.Logger;
 import models.CalendarItem;
 import models.Event;
 import models.Maraja;
+import models.Newsletter;
 import org.joda.time.DateTime;
 import org.joda.time.chrono.IslamicChronology;
 import play.cache.Cache;
+import play.libs.Codec;
 import play.mvc.*;
 import utils.PrayTime;
 
 public class Application extends Controller {
 
-    public static String islamMonth [] = {"Muharram","Safar","Rabi'El Awwal","Rabi'At Thani","Joumada El Awwal","Joumada At Thani","Rajab",
-    "Sha'ban","Ramadan","Shawwal","Dhoul Qa'da","Dhoul Hijja"};
+    public static String islamMonth[] = {"Muharram", "Safar", "Rabi'El Awwal", "Rabi'At Thani", "Joumada El Awwal", "Joumada At Thani", "Rajab",
+        "Sha'ban", "Ramadan", "Shawwal", "Dhoul Qa'da", "Dhoul Hijja"};
 
-    public static void index(int monthNumber,int page) {
-        
+    public static void index(int monthNumber, int page) {
+
         Http.Cookie timeZone = request.cookies.get("timeZone");
         Http.Cookie latitude = request.cookies.get("latitude");
         Http.Cookie longitude = request.cookies.get("longitude");
@@ -38,19 +41,19 @@ public class Application extends Controller {
         int today = d.get(Calendar.DAY_OF_MONTH);
         int currentMonth = d.get(Calendar.MONTH);
 
-        if(page != 0){
-            d.set(Calendar.MONTH, monthNumber+page);
+        if (page != 0) {
+            d.set(Calendar.MONTH, monthNumber + page);
         }
-        
+
         monthNumber = d.get(Calendar.MONTH);
         int year = d.get(Calendar.YEAR);
         String month = d.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.FRENCH);
         String adr = null;
-        
+
         if (timeZone != null && latitude != null && longitude != null && address != null
                 && maraja != null) {
 
-            Map<String,Event> ev = (Map<String, Event>) Cache.get("event");
+            Map<String, Event> ev = (Map<String, Event>) Cache.get("event");
             double lon = Double.parseDouble(longitude.value);
             double lat = Double.parseDouble(latitude.value);
             double t = Double.parseDouble(timeZone.value) / 60.0;
@@ -72,7 +75,7 @@ public class Application extends Controller {
             PrayTime p = new PrayTime();
 
             while (day <= lastDay) {
-                
+
                 String times[] = p.getPrayerTimes(d, lat, lon, t);
                 CalendarItem c = new CalendarItem();
                 c.weekDay = d.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.FRENCH);
@@ -82,17 +85,17 @@ public class Application extends Controller {
                 c.maghrib = times[5];
                 c.midnight = times[7];
                 c.hijriDay = dtIslamic.getDayOfMonth();
-                c.hijriMonth = Application.islamMonth[dtIslamic.getMonthOfYear()-1];
-                c.event = ev.get(dtIslamic.getDayOfMonth()+":"+dtIslamic.getMonthOfYear());
+                c.hijriMonth = Application.islamMonth[dtIslamic.getMonthOfYear() - 1];
+                c.event = ev.get(dtIslamic.getDayOfMonth() + ":" + dtIslamic.getMonthOfYear());
                 calItems.add(c);
 
                 day++;
                 d.set(Calendar.DAY_OF_MONTH, day);
-                dtISO = new DateTime(d.getTimeInMillis()+ (m.days * 86400000));
+                dtISO = new DateTime(d.getTimeInMillis() + (m.days * 86400000));
                 dtIslamic = dtISO.withChronology(IslamicChronology.getInstance());
             }
         }
-        render(calItems,month,monthNumber,year,adr,today,currentMonth);
+        render(calItems, month, monthNumber, year, adr, today, currentMonth);
     }
 
     public static void changeLocation() {
@@ -105,5 +108,35 @@ public class Application extends Controller {
         }
 
         render(marajas);
+    }
+
+    public static void editNewsletter(String confirm) {
+        Newsletter n = Newsletter.find("confirm = ?", confirm).first();
+        if (n == null) {
+            flash.error("Nous n'avons pas réussi à retouver vos paramêtres pour "
+                    + "faire les modifications . Veuillez contacter l'administrateur.");
+            Application.index(0, 0);
+        } else {
+            render(n,confirm);
+
+        }
+        
+    }
+
+    public static void saveNewsletter(Newsletter newsletter,String confirm){
+        Newsletter n = Newsletter.find("confirm = ?", confirm).first();
+        if (n == null) {
+            flash.error("Nous n'avons pas réussi à retouver vos paramêtres pour "
+                    + "faire les modifications . Veuillez contacter l'administrateur.");
+
+        } else {
+            n.beforeDay = newsletter.beforeDay;
+            n.confirm = Codec.UUID();
+            n.save();
+
+            flash.success("Les modfications d'envoi en été sauvegardées");
+        }
+
+        Application.index(0, 0);
     }
 }

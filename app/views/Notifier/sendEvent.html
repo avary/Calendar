@@ -1,4 +1,17 @@
-Salam alaykom cher frère ou chère soeur,
+Salam alaykom cher frère ou chère soeur,<br/><br/>
 
-${e.day} - ${e.month} : ${e.name}<br/>
-${e.link}
+Ce ${dayMonth} - ${e.day} ${monthName}, aura lieu l'événement suivant : <br/><br/>
+
+#{if e.link == null || e.link.isEmpty()}
+<strong>${e.name}</strong>
+#{/if}
+#{else}
+<a href="${e.link}">${e.name}</a>
+#{/else}
+<br/><br/><br/>
+<div style="font-size: 10px">
+    Vous pouvez à tout moment arrêter de recevoir ces mails en cliquant ici : 
+    <a href="http://localhost:9999/newsletters/stop?confirm=${n.confirm}">Arrêter de recevoir ces mails</a><br/>
+    Vous pouvez aussi modifier les paramêtres d'envoi en cliquant ici : 
+    <a href="http://localhost:9999/application/editNewsletter?confirm=${n.confirm}">Modifier les paramêtres d'envoi</a>
+</div>

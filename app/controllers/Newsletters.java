@@ -87,4 +87,18 @@ public class Newsletters extends Controller {
 
         Application.index(0, 0);
     }
+
+    public static void stop(String confirm){
+        Newsletter n = Newsletter.find("confirm = ?", confirm).first();
+        if(n == null){
+            flash.error("Nous n'avons pas réussi à retouver vos paramêtres pour "
+                    + "arrêter l'envoi des événements. Veuillez contacter l'administrateur.");
+        }else{
+            n.delete();
+            flash.success("L'envoi des événements a été arrêté pour votre adresse email.");
+            
+        }
+        Application.index(0, 0);
+    }
+
 }

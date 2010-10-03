@@ -1,9 +1,11 @@
 
 import controllers.Notifier;
 import ext.MyExtension;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import models.Event;
 import models.Maraja;
@@ -13,7 +15,6 @@ import org.joda.time.chrono.IslamicChronology;
 import play.Logger;
 import play.jobs.Job;
 import play.jobs.OnApplicationStart;
-import play.templates.JavaExtensions;
 
 /*
  * To change this template, choose Tools | Templates
@@ -58,13 +59,19 @@ public class NewsletterJob extends Job<Void> {
         List<Newsletter> news = Newsletter.find("enabled = true").fetch();
 
         for (Newsletter n : news) {
-            DateTime d1 = new DateTime(d.getTimeInMillis() + ((n.maraja.days + n.beforeDay) * 86400000));
+            GregorianCalendar eventDay = new GregorianCalendar();
+            eventDay.setTimeInMillis(eventDay.getTimeInMillis()+(n.maraja.days + n.beforeDay) * 86400000);
+            DateTime d1 = new DateTime(eventDay.getTimeInMillis());
             DateTime d2 = d1.withChronology(IslamicChronology.getInstance());
             Event e = eventMap.get(d2.getDayOfMonth() + ":" + d2.getMonthOfYear());
 
             if (e != null) {
-                Notifier.sendEvent(n.email, e);
+                String monthName = MyExtension.islamMonth[d2.getMonthOfYear()-1];
+                String dayMonth = eventDay.get(Calendar.DAY_OF_MONTH)+" "+eventDay.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.FRENCH);;
+                Notifier.sendEvent(n, e,monthName,dayMonth);
             }
         }
+
+        Logger.info("Envoi de la newsletters terminée");
     }
 }

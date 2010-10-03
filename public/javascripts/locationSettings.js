@@ -5,9 +5,37 @@ var expirationDays = 356;
 var timeZone;
 var address;
 
+function isDST() {
+    var d=new Date();
+    var dY=d.getFullYear();
+    var d1=new Date(dY,0,1,0,0,0,0);
+    var d2=new Date(dY,6,1,0,0,0,0);
+    var d1a=new Date((d1.toUTCString()).replace(" GMT",""));
+    var d2a=new Date((d2.toUTCString()).replace(" GMT",""));
+    var o1=(d1-d1a)/3600000;
+    var o2=(d2-d2a)/3600000;
+    var rV=0;
+    if (o1!=o2) {
+        d.setHours(0);
+        d.setMinutes(0);
+        d.setSeconds(0);
+        d.setMilliseconds(0);
+        var da=new Date((d.toUTCString()).replace(" GMT",""));
+        o3=(d-da)/3600000;
+        rV=(o3==o1)?0:1;
+    }
+    return rV;
+}
+
 function loadParams()
 {
-    timeZone = readCookie('timeZone');
+
+
+    if(readCookie('timeZone') == null || readCookie('timeZone') == ''){
+        timeZone = 120;
+    }else{
+        timeZone = readCookie('timeZone');
+    }
 
     var timeZoneList = document.getElementById('timeZoneList');
 
@@ -34,7 +62,12 @@ function loadParams()
         }
     }
 
-    $("#address").val(readCookie('address'));
+    if(readCookie('address') == null || readCookie('address') == ''){
+        $("#address").val("Belgique, Bruxelles");
+    }else{
+        $("#address").val(readCookie('address'));
+    }
+    
 
     initialize();
 

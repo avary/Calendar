@@ -24,12 +24,12 @@ public class Notifier extends Mailer{
         return sendAndWait(n);
     }
 
-    public static boolean sendEvent(String email,Event e) throws Exception{
+    public static boolean sendEvent(Newsletter n,Event e,String monthName,String dayMonth) throws Exception{
         setFrom(new InternetAddress("admin@al-imane.org", "Administrateur"));
         setReplyTo(new InternetAddress("admin@al-imane.org", ""));
         setSubject("Calendrier événements");
-        addRecipient(email);
-        return sendAndWait(e);
+        addRecipient(n.email);
+        return sendAndWait(n,e,monthName,dayMonth);
     }
 
 }
