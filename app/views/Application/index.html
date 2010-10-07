@@ -3,8 +3,7 @@
 
 <style type="text/css">
     #calendar tr td{
-        border:1px #aaa solid;
-        padding: 7px;
+        padding: 10px;
         padding-left: 10px;
         padding-right: 10px;
         text-align: center;
@@ -18,7 +17,7 @@
 
     .title{
         color:#FFFFFF;
-        background:#2e2e2e;
+        background:url("@{'/public/images/nav.png'}") repeat-x scroll 0 0 #2e2e2e;
     }
 
     .title td{
@@ -26,16 +25,24 @@
     }
 
     .tr_odd{
-        background-color: #ccc;
+        background:url("@{'/public/images/nav.png'}") repeat-x scroll 0 0 #2f867f;
     }
 
     .tr_even{
-        background-color: #eee;
+        background:url("@{'/public/images/nav.png'}") repeat-x scroll 0 0 #ddd;
     }
 
     .today{
         font-weight: bold;
+        border: 2px black solid;
+    }
 
+    .eventName{
+        border-top:  2px #257914 solid;
+        background:url("@{'/public/images/nav.png'}") repeat-x scroll 0 0 #257914;
+    }
+    .eventName td a{
+        color: white;
     }
 </style>
 
@@ -59,16 +66,16 @@
                 ${adr.raw()}<br/>
                 <a href="@{Application.index(monthNumber,-1)}">
                     <img alt="Suivant" src="@{'/public/images/next-left.png'}"
-                             title="Suivant">
+                         title="Suivant">
                 </a>
                 &nbsp;${month.capFirst()} - ${year}&nbsp;
-                
-                    <a title="Mois suivant"
-                       href="@{Application.index(monthNumber,1)}" rel="next">
-                        <img alt="Suivant" src="@{'/public/images/next-right.png'}"
-                             title="Suivant">
-                    </a>
-                
+
+                <a title="Mois suivant"
+                   href="@{Application.index(monthNumber,1)}" rel="next">
+                    <img alt="Suivant" src="@{'/public/images/next-right.png'}"
+                         title="Suivant">
+                </a>
+
                 <br/><br/>
                 <a href="#" onclick="$('#newsletter').slideToggle('slow');">Etre prévenu des événements par mail</a>
 
@@ -110,10 +117,10 @@
             <td style="width:70px" >
                 Dhuhr
             </td>
-            <td  >
+            <td  style="width:70px" >
                 Maghrib
             </td>
-            <td  >
+            <td  style="width:70px" >
                 Minuit
             </td>
             <td  >
@@ -122,7 +129,7 @@
         </tr>
         #{list items:calItems,as:'c'}
         #{if c.event}
-        <tr class="event">
+        <tr class="event tr_${c_parity} ${c_index == today && currentMonth == monthNumber?'today':''}"  style="border-bottom:  none;">
             #{/if}
             #{elseif c_index == today && currentMonth == monthNumber}
         <tr class="today tr_${c_parity}">
@@ -162,7 +169,7 @@
 
 </tr>
 #{if c.event}
-<tr class="eventName">
+<tr class="eventName ${c_index == today && currentMonth == monthNumber?'today':''}">
     <td colspan="5">
         #{if c.event.link}
         <a href="${c.event.link}">${c.event.name}</a>
@@ -170,7 +177,7 @@
         #{else}
         ${c.event.name}
         #{/else}
-        
+
     </td>
 </tr>
 #{/if}
