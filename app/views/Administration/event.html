@@ -1,29 +1,82 @@
 #{extends 'main.html' /}
-#{set title:'Home' /}
 
-<ul style="list-style: none">
-    <li style="float: left;padding-right: 10px;">
-        <a href="@{Application.index()}">Calendrier</a>
-    </li>
-    <li style="float: left;padding-right: 10px;">
-        <a href="@{Administration.index()}">Marajas</a>
-    </li>
-    <li style="float: left;padding-right: 10px;">
-        <a href="@{Administration.event()}">Evénements</a>
-    </li>
-    <li style="float: left;padding-right: 10px;">
-        <a href="@{Administration.newsletters()}">Newsletters</a>
-    </li>
-</ul>
+#{set 'userMenu'}
+<!--
+<div style="padding-right: 30px;" class="toplinks" id="toplinks">
+    <ul class="isuser">
+        <li>
+            <a href="">Notifications </a>
+        </li>
+        <li class="welcomelink">
+            Bienvenue, <a href="member.php/2265-Abu_Salih">Abu_Salih</a>
+        </li>
+    </ul>
+</div>
+-->
+#{/set}
 
-<br/><br/>
+#{set 'menu'}
+<div class="navbar" id="navbar">
+
+    <ul class="navtabs floatcontainer" id="navtabs">
+
+        <li>
+            <a class="navtab" href="@{Application.index()}">Calendrier</a>
+
+            <ul class="floatcontainer">
+                <li></li>
+                <!--
+                <li><a href="search.php?do=getnew&amp;contenttype=vBForum_Post">Nouveaux messages</a></li>
+                <li><a href="search.php?do=getnew&amp;contenttype=vBForum_SocialGroupMessage">Nouveaux sujets sociaux</a></li>
+                <li><a href="search.php?do=getnew&amp;contenttype=vBForum_Event">Nouveaux événements</a></li>
+                <li><a href="forumdisplay.php?do=markread&amp;markreadhash=1286250196-fd92a30c84502213c5de112389dbe64a9851d7e5">Marquer les messages comme lus</a></li>
+                -->
+            </ul>
+
+        </li>
+        <li>
+            <a class="navtab" href="@{Administration.index()}">Marajas</a>
+        </li>
+        <li class="selected">
+            <a class="navtab" href="@{Administration.event()}">Evénements</a>
+        </li>
+        <li>
+            <a class="navtab" href="@{Administration.newsletters()}">Newsletters</a>
+        </li>
+    </ul>
+    <!--
+    <div class="globalsearch" id="globalsearch">
+        <form class="navbar_search" id="navbar_search" method="post" action="search.php?do=process">
+            <span class="textboxcontainer">
+                <span>
+                    <input type="text" tabindex="99" class="textbox" name="query" value="">
+                </span>
+            </span>
+            <span class="buttoncontainer">
+                <span>
+                    <input type="image"
+                           name="submit" src="@{'/public/images/search.png'}" class="searchbutton">
+                </span>
+            </span>
+        </form>
+        <ul class="navbar_advanced_search">
+            <li><a accesskey="4" href="search.php">Recherche avancée</a></li>
+        </ul>
+    </div>
+    -->
+</div>
+#{/set}
+
 <div style="text-align: left">
-    <h1>Evénements</h1>
-    <a href="#" onclick="$('#newEvent').slideToggle('slow');return false;">Nouveau événement</a>
-    <div id="newEvent" style="display: none">
+
+
+    <a href="#" onclick="$('#newEvent').slideToggle('slow');return false;">
+        Nouveau événement
+    </a>
+    <div id="newEvent" style="display: none" align="left">
         <form action="@{Events.save()}" method="post">
             <p class="field">
-                <label>Date : </label> <input type="text" name="event.day" value="" style="width: 40px;"/>
+                <label style="width: 40px;float: left;font-weight: bold">Date : </label> <input type="text" class="textbox" name="event.day" value="" style="width: 40px;"/>
                 <select name="event.month">
                     #{list items:0..11,as:'i'}
                     <option value="${i+1}">${islamMonth[i]}</option>
@@ -31,17 +84,24 @@
                 </select>
             </p>
             <p  class="field">
-                <label>Nom : </label><input type="text" name="event.name" value=""/>
+                <label style="width: 40px;float: left;font-weight: bold">Nom : </label>
+                <input type="text" class="textbox" name="event.name" value=""
+                       style="width: 300px;"/>
             </p>
             <p  class="field">
-                <label>Lien : </label><input type="text" name="event.link" value="" style="width: 500px;"/>
+                <label style="width: 40px;float: left;font-weight: bold">Lien : </label>
+                <input type="text" class="textbox" name="event.link" value="" style="width: 500px;"/>
             </p>
-            <input type="submit" name="save" value="Ajouter"/>
+            <input class="button" type="submit" name="save" value="Ajouter"/>
         </form>
         <br/>
     </div>
+
     <br/><br/>
-    <table class="list">
+    <strong><u>Liste des événements</u></strong>
+    <br/><br/>
+    #{if events && events.size() > 0}
+    <table class="list" cellpadding="0" cellspacing="0">
         <tr>
             <th>
                 Date
@@ -59,21 +119,25 @@
         </tr>
         #{list items:events}
         <tr>
-            <td>
+            <td nowrap="nowrap">
                 ${_.day} - ${islamMonth[_.month-1]}
             </td>
-            <td>
+            <td nowrap="nowrap">
                 ${_.name}
             </td>
             <td>
                 <a href="${_.link}">${_.link}</a>
             </td>
-            <td>
+            <td nowrap="nowrap">
                 <a href="#" onclick="$('#event_${_.id}').toggle();return false;">
-                    <img src="@{'/public/images/edit.png'}" alt="Modifier cet événement" title="Modifier cet événement"/>
+                    <img src="@{'/public/images/edit.png'}" 
+                         alt="Modifier cet événement" title="Modifier cet événement"
+                         width="22" height="22"/>
                 </a>
                 <a href="@{Events.delete(_.id)}" onclick="return confirm('Etes vous sur de vouloir effacer cet événement?');">
-                    <img src="@{'/public/images/delete.png'}" alt="Supprimer cet événement" title="Supprimer cet événement"/>
+                    <img src="@{'/public/images/delete.png'}" 
+                         alt="Supprimer cet événement" title="Supprimer cet événement"
+                         width="22" height="22"/>
                 </a>
             </td>
         </tr>
@@ -81,8 +145,8 @@
             <td colspan="5">
                 <form action="@{Events.save()}" method="post">
                     <p class="field">
-                        <input type="hidden" name="event.id" value="${_.id}"/>
-                        <label>Date : </label> <input type="text" name="event.day" value="${_.day}" style="width: 40px;"/>
+                        <label style="width: 40px;float: left;font-weight: bold">Date : </label> 
+                        <input type="text" class="textbox" name="event.day" value="${_.day}" style="width: 40px;"/>
                         <select name="event.month">
                             #{list items:0..11,as:'i'}
                             <option value="${i+1}" ${_.month == (i+1)?"selected=selected":''}>${islamMonth[i]}</option>
@@ -90,17 +154,25 @@
                         </select>
                     </p>
                     <p  class="field">
-                        <label>Nom : </label><input type="text" name="event.name" value="${_.name}"/>
+                        <label style="width: 40px;float: left;font-weight: bold">Nom : </label>
+                        <input type="text" class="textbox" name="event.name" value="${_.name}"
+                               style="width: 300px;"/>
                     </p>
                     <p  class="field">
-                        <label>Lien : </label><input type="text" name="event.link" value="${_.link}" style="width: 500px;"/>
+                        <label style="width: 40px;float: left;font-weight: bold">Lien : </label>
+                        <input type="text" class="textbox" name="event.link" value="${_.link}" style="width: 500px;"/>
                     </p>
-                    <input type="submit" name="save" value="Sauvegarder"/>
+                    <input class="button" type="submit" name="save" value="Sauvegarder"/>
                 </form>
+                <br/><br/>
             </td>
         </tr>
 
         #{/list}
     </table>
+    #{/if}
+    #{else}
+    Il n'y aucun événement pour l'instant.
+    #{/else}
 </div>
 

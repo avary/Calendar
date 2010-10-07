@@ -1,45 +1,95 @@
 #{extends 'main.html' /}
-#{set title:'Home' /}
 
-<ul style="list-style: none">
-    <li style="float: left;padding-right: 10px;">
-        <a href="@{Application.index()}">Calendrier</a>
-    </li>
-    <li style="float: left;padding-right: 10px;">
-        <a href="@{Administration.index()}">Marajas</a>
-    </li>
-    <li style="float: left;padding-right: 10px;">
-        <a href="@{Administration.event()}">Evénements</a>
-    </li>
-    <li style="float: left;padding-right: 10px;">
-        <a href="@{Administration.newsletters()}">Newsletters</a>
-    </li>
-</ul>
+#{set 'userMenu'}
+<!--
+<div style="padding-right: 30px;" class="toplinks" id="toplinks">
+    <ul class="isuser">
+        <li>
+            <a href="">Notifications </a>
+        </li>
+        <li class="welcomelink">
+            Bienvenue, <a href="member.php/2265-Abu_Salih">Abu_Salih</a>
+        </li>
+    </ul>
+</div>
+-->
+#{/set}
 
-<br/><br/>
+#{set 'menu'}
+<div class="navbar" id="navbar">
 
-Date islamique par defaut : ${today.islamFormat()}
-<form action="@{Marajas.saveDays()}">
-    <table>
-        <tr>
-            #{list items:marajas}
-            <td style="width: 250px">
-                <p><strong>${_.name}</strong></p>
-                <p>${_.today.islamFormat()}</p><br/>
-                Décalage : <select name="days">
-                    #{list items:-4..4, as:'i'}
-                    <option value="${i}" ${i == _.days?"selected='selected'":""}>${i}</option>
-                    #{/list}
+    <ul class="navtabs floatcontainer" id="navtabs">
 
-                </select>
-                <input type="hidden" name="id" value="${_.id}"/>
-            </td>
-            #{/list}
-        </tr>
-        <tr>
-            <td colspan="${marajas.size()}" align="center">
-                <input type="submit" name="save" value="Sauvegarder"/>
-            </td>
-        </tr>
-    </table>
-</form>
+        <li>
+            <a class="navtab" href="@{Application.index()}">Calendrier</a>
+
+            <ul class="floatcontainer">
+                <li></li>
+                <!--
+                <li><a href="search.php?do=getnew&amp;contenttype=vBForum_Post">Nouveaux messages</a></li>
+                <li><a href="search.php?do=getnew&amp;contenttype=vBForum_SocialGroupMessage">Nouveaux sujets sociaux</a></li>
+                <li><a href="search.php?do=getnew&amp;contenttype=vBForum_Event">Nouveaux événements</a></li>
+                <li><a href="forumdisplay.php?do=markread&amp;markreadhash=1286250196-fd92a30c84502213c5de112389dbe64a9851d7e5">Marquer les messages comme lus</a></li>
+                -->
+            </ul>
+
+        </li>
+        <li class="selected">
+            <a class="navtab" href="@{Administration.index()}">Marajas</a>
+        </li>
+        <li>
+            <a class="navtab" href="@{Administration.event()}">Evénements</a>
+        </li>
+        <li>
+            <a class="navtab" href="@{Administration.newsletters()}">Newsletters</a>
+        </li>
+    </ul>
+    <div class="globalsearch" id="globalsearch">
+        <form class="navbar_search" id="navbar_search" method="post" action="search.php?do=process">
+            <span class="textboxcontainer">
+                <span>
+                    <input type="text" tabindex="99" class="textbox" name="query" value="">
+                </span>
+            </span>
+            <span class="buttoncontainer">
+                <span>
+                    <input type="image"
+                           name="submit" src="@{'/public/images/search.png'}" class="searchbutton">
+                </span>
+            </span>
+        </form>
+        <ul class="navbar_advanced_search">
+            <li><a accesskey="4" href="search.php">Recherche avancée</a></li>
+        </ul>
+    </div>
+</div>
+#{/set}
+
+<div style="margin: 0 auto;" align="center">
+    Date islamique par defaut : <strong>${today.islamFormat()}</strong><br/><br/>
+    <form action="@{Marajas.saveDays()}">
+        <table>
+            <tr>
+                #{list items:marajas}
+                <td style="width: 250px" align="center">
+                    <p><strong>${_.name}</strong></p>
+                    <p>${_.today.islamFormat()}</p><br/>
+                    Décalage : <select name="days">
+                        #{list items:-4..4, as:'i'}
+                        <option value="${i}" ${i == _.days?"selected='selected'":""}>${i}</option>
+                        #{/list}
+
+                    </select>
+                    <input type="hidden" name="id" value="${_.id}"/>
+                </td>
+                #{/list}
+            </tr>
+            <tr>
+                <td colspan="${marajas.size()}" align="center">
+                    <br/><br/>
+                    <input class="button" type="submit" name="save" value="Sauvegarder"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>

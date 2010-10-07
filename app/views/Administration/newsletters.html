@@ -1,28 +1,82 @@
 #{extends 'main.html' /}
 #{set title:'Home' /}
 
-<ul style="list-style: none">
-    <li style="float: left;padding-right: 10px;">
-        <a href="@{Application.index()}">Calendrier</a>
-    </li>
-    <li style="float: left;padding-right: 10px;">
-        <a href="@{Administration.index()}">Marajas</a>
-    </li>
-    <li style="float: left;padding-right: 10px;">
-        <a href="@{Administration.event()}">Evénements</a>
-    </li>
-    <li style="float: left;padding-right: 10px;">
-        <a href="@{Administration.newsletters()}">Newsletters</a>
-    </li>
-</ul>
+#{set 'userMenu'}
+<!--
+<div style="padding-right: 30px;" class="toplinks" id="toplinks">
+    <ul class="isuser">
+        <li>
+            <a href="">Notifications </a>
+        </li>
+        <li class="welcomelink">
+            Bienvenue, <a href="member.php/2265-Abu_Salih">Abu_Salih</a>
+        </li>
+    </ul>
+</div>
+-->
+#{/set}
 
-<br/><br/>
+#{set 'menu'}
+<div class="navbar" id="navbar">
+
+    <ul class="navtabs floatcontainer" id="navtabs">
+
+        <li>
+            <a class="navtab" href="@{Application.index()}">Calendrier</a>
+
+            <ul class="floatcontainer">
+                <li></li>
+                <!--
+                <li><a href="search.php?do=getnew&amp;contenttype=vBForum_Post">Nouveaux messages</a></li>
+                <li><a href="search.php?do=getnew&amp;contenttype=vBForum_SocialGroupMessage">Nouveaux sujets sociaux</a></li>
+                <li><a href="search.php?do=getnew&amp;contenttype=vBForum_Event">Nouveaux événements</a></li>
+                <li><a href="forumdisplay.php?do=markread&amp;markreadhash=1286250196-fd92a30c84502213c5de112389dbe64a9851d7e5">Marquer les messages comme lus</a></li>
+                -->
+            </ul>
+
+        </li>
+        <li>
+            <a class="navtab" href="@{Administration.index()}">Marajas</a>
+        </li>
+        <li>
+            <a class="navtab" href="@{Administration.event()}">Evénements</a>
+        </li>
+        <li class="selected">
+            <a class="navtab" href="@{Administration.newsletters()}">Newsletters</a>
+        </li>
+    </ul>
+    <!--
+    <div class="globalsearch" id="globalsearch">
+        <form class="navbar_search" id="navbar_search" method="post" action="search.php?do=process">
+            <span class="textboxcontainer">
+                <span>
+                    <input type="text" tabindex="99" class="textbox" name="query" value="">
+                </span>
+            </span>
+            <span class="buttoncontainer">
+                <span>
+                    <input type="image"
+                           name="submit" src="@{'/public/images/search.png'}" class="searchbutton">
+                </span>
+            </span>
+        </form>
+        <ul class="navbar_advanced_search">
+            <li><a accesskey="4" href="search.php">Recherche avancée</a></li>
+        </ul>
+    </div>
+    -->
+</div>
+#{/set}
+
 <div style="text-align: left">
-    <h1>Newsletters</h1>
+    <strong><u>Newsletters</u></strong>
+    <br/><br/>
 
     #{if flash.success}
-    <p>${flash.success}</p>
+    <p class="success">${flash.success}</p><br/>
     #{/if}
+
+    #{if newsletters && newsletters.size() > 0}
     <table class="list">
         <tr>
             <th>
@@ -79,24 +133,30 @@
             </td>
             <td>
                 <a href="#" onclick="$('#newsletter_${_.id}').toggle();return false;">
-                    <img src="@{'/public/images/edit.png'}" alt="Modifier" title="Modifier"/>
+                    <img src="@{'/public/images/edit.png'}" alt="Modifier" 
+                         title="Modifier"
+                         width="22" height="22"/>
                 </a>
                 <a href="@{Newsletters.delete(_.id)}" onclick="return confirm('Etes vous sur de vouloir le supprimer?');">
-                    <img src="@{'/public/images/delete.png'}" alt="Supprimer" title="Supprimer"/>
+                    <img src="@{'/public/images/delete.png'}" alt="Supprimer" 
+                         title="Supprimer"
+                         width="22" height="22"/>
                 </a>
             </td>
         </tr>
 
         <tr id="newsletter_${_.id}" style="display: none">
             <td colspan="5">
+                <br/>
                 <form action="@{Newsletters.save()}" method="post">
                     <p class="field">
                         <input type="hidden" name="n.id" value="${_.id}"/>
-                        <label>Votre email : </label>
-                        <input type="text" name="n.email" value="${_.email}"/>
+                        <label style="width: 90px;float: left;font-weight: bold">Email : </label>
+                        <input type="text" name="n.email" value="${_.email}"
+                               class="textbox" style="width: 200px;"/>
                     </p>
                     <p class="field">
-                        <label>Maraja : </label>
+                        <label style="width: 90px;float: left;font-weight: bold">Maraja : </label>
                         <select name="n.maraja.id">
                             #{list items:marajas,as:'m'}
 
@@ -107,7 +167,7 @@
                         </select>
                     </p>
                     <p class="field">
-                        <label>Jour d'envoi : </label>
+                        <label style="width: 90px;float: left;font-weight: bold">Jour d'envoi : </label>
                         <select name="n.beforeDay">
                             <option value="0" ${_.beforeDay == 0?"selected='selected'":""}>le jour même</option>
                             <option value="1" ${_.beforeDay == 1?"selected='selected'":""}>1 jour à l'avance</option>
@@ -116,12 +176,17 @@
                             <option value="7" ${_.beforeDay == 7?"selected='selected'":""}>1 semaine à l'avance</option>
                         </select>
                     </p>
-                    <input type="submit" name="save" value="Sauvegarder"/>
+                    <input class="button" type="submit" name="save" value="Sauvegarder"/>
 
                 </form>
+                <br/><br/>
             </td>
         </tr>
 
         #{/list}
     </table>
+    #{/if}
+    #{else}
+    Aucun inscrits pour recevoir la newsletter.
+    #{/else}
 </div>
