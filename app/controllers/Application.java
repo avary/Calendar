@@ -77,47 +77,49 @@ public class Application extends Controller {
             marajaName = m.name;
 
             DateTime dtISO = new DateTime(d.getTimeInMillis() + (m.days * 86400000));
-            
+
             DateTime dtIslamic = dtISO.withChronology(IslamicChronology.getInstance());
 
-            todayIslamic = new DateTime(todayDate.getTimeInMillis() + (m.days * 86400000)).
-                    withChronology(IslamicChronology.getInstance());
+            todayIslamic = new DateTime(todayDate.getTimeInMillis() + (m.days * 86400000)).withChronology(IslamicChronology.getInstance());
 
 
-            TimeZone tz = TimeZone.getTimeZone(timeZone.value);
-            double t = tz.getRawOffset()/3600000;
-            if(tz.inDaylightTime(new Date())){
-                t++;
-            }
-            
+
+
             PrayTime p = new PrayTime();
 
             while (day <= lastDay) {
-
-                String times[] = p.getPrayerTimes(d, lat, lon, t);
-                CalendarItem c = new CalendarItem();
-                c.weekDay = d.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.FRENCH);
-                c.fajr = times[0];
-                c.sunrise = times[1];
-                c.duhr = times[2];
-                c.maghrib = times[5];
-                c.midnight = times[7];
-                c.hijriDay = dtIslamic.getDayOfMonth();
-                c.hijriMonth = Application.islamMonth[dtIslamic.getMonthOfYear() - 1];
-                c.event = ev.get(dtIslamic.getDayOfMonth() + ":" + dtIslamic.getMonthOfYear());
-                calItems.add(c);
-
-                day++;
-                d.set(Calendar.DAY_OF_MONTH, day);
-                dtISO = new DateTime(d.getTimeInMillis() + (m.days * 86400000));
-                dtIslamic = dtISO.withChronology(IslamicChronology.getInstance());
+                try {
+                    TimeZone tz = TimeZone.getTimeZone(URLDecoder.decode(timeZone.value, "utf-8"));
+                    double t = tz.getRawOffset() / 3600000;
+                    if (tz.inDaylightTime(new Date(d.getTimeInMillis()))) {
+                        t++;
+                    }
+                    String[] times = p.getPrayerTimes(d, lat, lon, t);
+                    CalendarItem c = new CalendarItem();
+                    c.weekDay = d.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.FRENCH);
+                    c.fajr = times[0];
+                    c.sunrise = times[1];
+                    c.duhr = times[2];
+                    c.maghrib = times[5];
+                    c.midnight = times[7];
+                    c.hijriDay = dtIslamic.getDayOfMonth();
+                    c.hijriMonth = Application.islamMonth[dtIslamic.getMonthOfYear() - 1];
+                    c.event = ev.get(dtIslamic.getDayOfMonth() + ":" + dtIslamic.getMonthOfYear());
+                    calItems.add(c);
+                    day++;
+                    d.set(Calendar.DAY_OF_MONTH, day);
+                    dtISO = new DateTime(d.getTimeInMillis() + (m.days * 86400000));
+                    dtIslamic = dtISO.withChronology(IslamicChronology.getInstance());
+                } catch (UnsupportedEncodingException ex) {
+                    Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-        }else{
+        } else {
             marajas = Maraja.all().fetch();
         }
 
         render(calItems, month, monthNumber, year, adr, today, currentMonth,
-                marajaName,todayDate,todayIslamic,marajas);
+                marajaName, todayDate, todayIslamic, marajas);
     }
 
     public static void changeLocation() {
@@ -139,13 +141,13 @@ public class Application extends Controller {
                     + "faire les modifications . Veuillez contacter l'administrateur.");
             Application.index(0, 0);
         } else {
-            render(n,confirm);
+            render(n, confirm);
 
         }
-        
+
     }
 
-    public static void saveNewsletter(Newsletter newsletter,String confirm){
+    public static void saveNewsletter(Newsletter newsletter, String confirm) {
         Newsletter n = Newsletter.find("confirm = ?", confirm).first();
         if (n == null) {
             flash.error("Nous n'avons pas réussi à retouver vos paramêtres pour "
