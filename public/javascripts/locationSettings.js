@@ -4,48 +4,10 @@ var geocoder;
 var expirationDays = 356;
 var timeZone;
 var address;
-
-function isDST() {
-    var d=new Date();
-    var dY=d.getFullYear();
-    var d1=new Date(dY,0,1,0,0,0,0);
-    var d2=new Date(dY,6,1,0,0,0,0);
-    var d1a=new Date((d1.toUTCString()).replace(" GMT",""));
-    var d2a=new Date((d2.toUTCString()).replace(" GMT",""));
-    var o1=(d1-d1a)/3600000;
-    var o2=(d2-d2a)/3600000;
-    var rV=0;
-    if (o1!=o2) {
-        d.setHours(0);
-        d.setMinutes(0);
-        d.setSeconds(0);
-        d.setMilliseconds(0);
-        var da=new Date((d.toUTCString()).replace(" GMT",""));
-        o3=(d-da)/3600000;
-        rV=(o3==o1)?0:1;
-    }
-    return rV;
-}
+var lastGoodAddress;
 
 function loadParams()
 {
-
-
-    if(readCookie('timeZone') == null || readCookie('timeZone') == ''){
-        timeZone = 120;
-    }else{
-        timeZone = readCookie('timeZone');
-    }
-
-    var timeZoneList = document.getElementById('timeZoneList');
-
-    for (i = 0; i < timeZoneList.length; i++) {
-
-        if (timeZoneList.options[i].value == timeZone) {
-            timeZoneList.selectedIndex = i;
-            break;
-        }
-    }
 
     var marajaList = document.getElementById('marajaList');
     var marajaValue = readCookie('maraja');
@@ -64,8 +26,10 @@ function loadParams()
 
     if(readCookie('address') == null || readCookie('address') == ''){
         $("#address").val("Belgique, Bruxelles");
+        lastGoodAddress = "Belgique, Bruxelles";
     }else{
         $("#address").val(readCookie('address'));
+        lastGoodAddress = readCookie('address');
     }
     
 
@@ -142,16 +106,17 @@ function codeAddress() {
                     position: results[0].geometry.location
                 });
                 $("#address").val(results[0].formatted_address);
+                lastGoodAddress = results[0].formatted_address;
             }
         } else {
-            alert("Geocode was not successful for the following reason: " + status);
+            alert("Nous n'avons pas réussi à localiser cette adresse");
+            $("#address").val(lastGoodAddress);
         }
     });
 }
 
 function save() {
 
-    setCookie('timeZone', $('#timeZoneList').val(), 365, '/', '', '');
     setCookie('maraja', $('#marajaList').val(), 365, '/', '', '');
     var lat = marker.getPosition().lat();
     var lng = marker.getPosition().lng();
@@ -159,10 +124,29 @@ function save() {
     setCookie('latitude',lat, expirationDays, '/', '', '');
     setCookie('address',$('#address').val(), expirationDays, '/', '', '');
 
-    if(window.opener){
-        window.opener.document.location=homePageURL;
-        window.close();
-    }
+    // Build the URL to query...notice the php ip address at the end.
+    var url = "http://ws.geonames.org/timezoneJSON?lat="+lat+"&lng="+lng+"&callback=?";
+
+    // Utilize the JQuery's JSON function
+    $.getJSON(url, function(data){
+        //Make sure it processed it okay.
+        if(data.status){
+            if(window.opener){
+                window.opener.document.location=homePageURL;
+                window.close();
+            }
+        }else{
+            setCookie('timeZoneName', data.timezoneId, 365, '/', '', '');
+            if(window.opener){
+                window.opener.document.location=homePageURL;
+                window.close();
+            }
+        }
+
+    });
+
+    
+    
 }
 
 

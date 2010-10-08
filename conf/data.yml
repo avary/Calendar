@@ -9,3 +9,15 @@ Maraja(m2):
 Maraja(m3):
   name: Sayid Sistani
   days: -1
+
+Event(e1):
+  day: 25
+  month: 10
+  name: "Martyr du 6ième Imam : Imam Jaffar Sadiq (as)"
+  link: http://www.al-imane.org/forums/showthread.php/7793-le-martyr-el-Imam-Djaffar-S%C3%A0deq-%28as%29
+
+Event(e2):
+  day: 11
+  month: 11
+  name: "Naissance du 8ième Imam : Imam Ali Reda (as)"
+  link: http://www.al-imane.org/forums/showthread.php/8933-La-naissance-de-l-imam-Ali-al-Ridha-!

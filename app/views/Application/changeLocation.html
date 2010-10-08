@@ -17,10 +17,9 @@
                 <td>
 
                     Choisissez votre localité en choisissant votre Pays, ensuite votre ville. <br/><em><strong>
-                            Exemple :</strong></em> 'France, Paris' ou 'Belgique, Bruxelles'.
-                    Choisissez également votre fuseau Horaire.<br/> <em><strong>Exemple</strong></em>
-                    pour la France et la Belgique : GMT + 1 Heures d'Hiver
-                    ou GMT + 2 Heures d'été. Les paramètres resteront engistrés sur votre ordinateur.
+                            Exemple :</strong></em> 'France, Paris' ou 'Belgique, Bruxelles'.<br/>
+                    Choisissez aussi votre Maraja pour avoir un calendrier selon la date définie par ce Maraja.<br/>
+                    Les paramètres resteront engistrés sur votre ordinateur.
 
                 </td>
             </tr>
@@ -28,13 +27,28 @@
         <br>
         <table border="0">
             <tr>
+                <td align="right">
+                    <strong>Maraja :</strong>
+                </td>
+                <td>
+                    <select id="marajaList">
+                        #{list items:marajas}
+
+                        <option value="${_.id}">${_.name}</option>
+
+                        #{/list}
+
+                    </select>
+                </td>
+            </tr>
+            <tr>
                 <td align="right" >
-                    Adresse :
+                    <strong>Localité :</strong>
                 </td>
 
                 <td>
                     <form action="" onSubmit="codeAddress();return false;">
-                        <INPUT type="text" id="address" size="35"/>
+                        <input type="text" id="address" size="35"/>
                         <input type="submit" value="Localisez" />
                     </form>
                 </td>
@@ -61,89 +75,7 @@
                 </td>
             </tr>
 
-            <tr>
-                <td align="right" width="140px">
-                    Fuseau horaire :
-                </td>
-                <td>
-                    <select id="timeZoneList" type="text" height="26" >
-                        <option value="-780">GMT-13:00</option>
-                        <option value="-750">GMT-12:30</option>
-                        <option value="-720">GMT-12:00</option>
-                        <option value="-690">GMT-11:30</option>
 
-                        <option value="-660">GMT-11:00</option>
-                        <option value="-630">GMT-10:30</option>
-                        <option value="-600">GMT-10:00</option>
-                        <option value="-570">GMT-09:30</option>
-                        <option value="-540">GMT-09:00</option>
-                        <option value="-510">GMT-08:30</option>
-                        <option value="-480">GMT-08:00</option>
-                        <option value="-450">GMT-07:30</option>
-                        <option value="-420">GMT-07:00</option>
-
-                        <option value="-390">GMT-06:30</option>
-                        <option value="-360">GMT-06:00</option>
-                        <option value="-330">GMT-05:30</option>
-                        <option value="-300">GMT-05:00</option>
-                        <option value="-270">GMT-04:30</option>
-                        <option value="-240">GMT-04:00</option>
-                        <option value="-210">GMT-03:30</option>
-                        <option value="-180">GMT-03:00</option>
-                        <option value="-150">GMT-02:30</option>
-
-                        <option value="-120">GMT-02:00</option>
-                        <option value="-90">GMT-01:30</option>
-                        <option value="-60">GMT-01:00</option>
-                        <option value="-30">GMT-00:30</option>
-                        <option value="0" selected="true">GMT</option>
-                        <option value="30">GMT+00:30</option>
-                        <option value="60">GMT+01:00</option>
-                        <option value="90">GMT+01:30</option>
-                        <option value="120">GMT+02:00</option>
-
-                        <option value="150">GMT+02:30</option>
-                        <option value="180">GMT+03:00</option>
-                        <option value="210">GMT+03:30</option>
-                        <option value="240">GMT+04:00</option>
-                        <option value="270">GMT+04:30</option>
-                        <option value="300">GMT+05:00</option>
-                        <option value="330">GMT+05:30</option>
-                        <option value="360">GMT+06:00</option>
-                        <option value="390">GMT+06:30</option>
-
-                        <option value="420">GMT+07:00</option>
-                        <option value="450">GMT+07:30</option>
-                        <option value="480">GMT+08:00</option>
-                        <option value="510">GMT+08:30</option>
-                        <option value="540">GMT+09:00</option>
-                        <option value="570">GMT+09:30</option>
-                        <option value="600">GMT+10:00</option>
-                        <option value="630">GMT+10:30</option>
-                        <option value="660">GMT+11:00</option>
-
-                        <option value="690">GMT+11:30</option>
-                        <option value="720">GMT+12:00</option>
-                        <option value="750">GMT+12:30</option>
-                        <option value="780">GMT+13:00</option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <td align="right">
-                    Maraja :
-                </td>
-                <td>
-                    <select id="marajaList">
-                        #{list items:marajas}
-
-                        <option value="${_.id}">${_.name}</option>
-
-                        #{/list}
-
-                    </select>
-                </td>
-            </tr>
             <tr>
                 <td colspan="2" align="right">
                     <INPUT type="button" id="finishBtn" value="Sauvegarder" onClick="save()"/>

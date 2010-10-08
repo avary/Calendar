@@ -3,7 +3,7 @@
 
 <style type="text/css">
     #calendar tr td{
-        padding: 10px;
+        padding: 8px;
         padding-left: 10px;
         padding-right: 10px;
         text-align: center;
@@ -34,12 +34,26 @@
 
     .today{
         font-weight: bold;
-        border: 3px black solid;
+        border: 2px black solid;
+    }
+
+    .todayEvent{
+        font-weight: bold;
+        border-top:  2px black solid;
+        border-right:  2px black solid;
+        border-left:  2px black solid;
+    }
+
+    .todayEventName{
+        border-bottom:  2px black solid;
+        border-right:  2px black solid;
+        border-left:  2px black solid;
+        color: white;
+        background:url("@{'/public/images/nav.png'}") repeat-x scroll 0 0 #257914;
     }
 
     .eventName{
         color: white;
-        border-top:  2px #257914 solid;
         background:url("@{'/public/images/nav.png'}") repeat-x scroll 0 0 #257914;
     }
     .eventName td a{
@@ -63,19 +77,36 @@
     #{if calItems.size() > 0}
     <table id="calendar" cellpadding="5" cellspacing="0">
         <tr>
+            <td colspan="8" style="border: 0px black solid;">
+                Nous sommes le : ${todayDate.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.FRENCH)}
+                ${todayDate.format('dd MMMMM')}
+                &nbsp;-&nbsp;
+                ${todayIslamic.islamFormat()}
+            </td>
+        </tr>
+        <tr>
+
             <td colspan="8" style="border: 0px black solid;" class="pagination">
-                ${adr.raw()}<br/>
-                <a href="@{Application.index(monthNumber,-1)}">
-                    <img alt="Suivant" src="@{'/public/images/next-left.png'}"
-                         title="Suivant">
-                </a>
+                ${adr.raw()}
+                &nbsp;-&nbsp;
+                ${marajaName}
+                <br/>
+                <span class="prev_next">
+                    <a href="@{Application.index(monthNumber,-1)}">
+                        <img alt="Mois précédant" src="@{'/public/images/previous.png'}"
+                             title="Mois précédant">
+                    </a>
+                </span>
+
                 &nbsp;${month.capFirst()} - ${year}&nbsp;
 
-                <a title="Mois suivant"
-                   href="@{Application.index(monthNumber,1)}" rel="next">
-                    <img alt="Suivant" src="@{'/public/images/next-right.png'}"
-                         title="Suivant">
-                </a>
+                <span class="prev_next">
+                    <a title="Mois suivant"
+                       href="@{Application.index(monthNumber,1)}" rel="next">
+                        <img alt="Mois suivant" src="@{'/public/images/next.png'}"
+                             title="Mois suivant">
+                    </a>
+                </span>
 
                 <br/><br/>
                 <a href="#" onclick="$('#newsletter').slideToggle('slow');">Etre prévenu des événements par mail</a>
@@ -130,7 +161,7 @@
         </tr>
         #{list items:calItems,as:'c'}
         #{if c.event}
-        <tr class="event tr_${c_parity} ${c_index == today && currentMonth == monthNumber?'today':''}"  style="border-bottom:  none;">
+        <tr class="event tr_${c_parity} ${c_index == today && currentMonth == monthNumber?'todayEvent':''}"  style="border-bottom:  none;">
             #{/if}
             #{elseif c_index == today && currentMonth == monthNumber}
         <tr class="today tr_${c_parity}">
@@ -170,7 +201,7 @@
 
 </tr>
 #{if c.event}
-<tr class="eventName ${c_index == today && currentMonth == monthNumber?'today':''}">
+<tr class="eventName ${c_index == today && currentMonth == monthNumber?'todayEventName':''}">
     <td colspan="5">
         #{if c.event.link}
         <a href="${c.event.link}">${c.event.name}</a>
@@ -209,11 +240,34 @@
 </table>
 #{/if}
 #{else}
-Vous devez d'abord configurer le calendrier. <br/><br/>
+<strong>Vous devez d'abord configurer le calendrier. </strong><br/><br/>
 Nous avons détecté les paramètres suivants pour vous : <br/><br/>
-<strong>Pays/Ville : </strong><span id="country"></span>/<span id="city"></span> <br/>
-<strong>Fuseau horaire : </strong>GMT<span id="gmt"></span><br/>
-<strong>Heure de ce fuseau : </strong><span id="hour"></span><br/>
+
+<table>
+    <tr>
+        <td>
+            <strong>Pays/Ville : </strong>
+        </td>
+        <td>
+            <span id="country"></span>/<span id="city"></span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <strong>Maraja :</strong>
+        </td>
+        <td>
+            <select id="marajaList">
+                #{list items:marajas}
+                <option value="${_.id}">${_.name}</option>
+                #{/list}
+            </select>
+        </td>
+    </tr>
+</table>
+
+<br/>
+
 <a href="" onclick="configure();">Cliquez ici pour configurer le calendrier selon ces paramètres</a>
 
 
@@ -224,7 +278,7 @@ Nous avons détecté les paramètres suivants pour vous : <br/><br/>
     var country;
     var lat;
     var lng;
-    var gmtValue;
+    var timezone;
 
     // Utilize the JQuery's JSON function
     $.getJSON(url, function(data){
@@ -238,55 +292,22 @@ Nous avons détecté les paramètres suivants pour vous : <br/><br/>
             country = location.CountryName;
             lat = location.Latitude;
             lng = location.Longitude;
-            var gmt = gmtSgn(parseInt(location.Gmtoffset/60));
-            gmtValue = location.Gmtoffset/60;
-
-            var timezone = location.TimezoneName;
-            $.getJSON("http://json-time.appspot.com/time.json?tz="+timezone+"&callback=?",
-            function(data){
-                $('#hour').html(data.hour+":"+(data.minute < 10?"0"+data.minute:data.minute));
-            })
-
+            timezone = location.TimezoneName;
 
             $('#country').html(country);
             $('#city').html(city);
-            $('#gmt').html(gmt);
 
         }
 
     });
 
-    function gmtSgn(gmt_){
-        var g_sgn="";
-        if(gmt_>0)
-            g_sgn="+";
-        if(gmt_<0)
-            g_sgn="-";
-
-        gmt_m=Math.abs(gmt_)%60;
-        if(gmt_>0)
-            gmt_h=Math.abs((gmt_-gmt_m)/60);
-        else
-            gmt_h=Math.abs((gmt_+gmt_m)/60);
-
-        if(gmt_h<10)
-            g_sgn=g_sgn+"0"+gmt_h;
-        else
-            g_sgn=g_sgn+gmt_h;
-        if(gmt_m<10)
-            g_sgn=g_sgn+":"+"0"+gmt_m;
-        else
-            g_sgn=g_sgn+":"+gmt_m;
-
-        return g_sgn;
-    }
-
     function configure(){
         $.cookie("latitude", lat, { expires: 365 });
         $.cookie("longitude", lng, { expires: 365 });
         $.cookie("address", country+", "+city, { expires: 365 });
-        $.cookie("timeZone", gmtValue, { expires: 365 });
-        
+        $.cookie("timeZoneName", timezone, { expires: 365 });
+        $.cookie('maraja', $('#marajaList').val(), 365, '/', '', '');
+   
     }
 </script>
 #{/else}

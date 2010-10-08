@@ -9,7 +9,7 @@
 <p>${flash.error}</p>
 #{/if}
 
-<h1>Modifications des options d'envoi</h1>
+<strong>Modifications des options d'envoi</strong><br/><br/>
 <form action="@{Application.saveNewsletter()}" method="post">
     <input type="hidden" name="confirm" value="${confirm}"/>
     <input type="hidden" name="newsletter.id" value="${n.id}"/>
@@ -23,6 +23,6 @@
             <option value="7" ${n.beforeDay == 7?"selected='selected'":""}>1 semaine à l'avance</option>
         </select>
     </p>
-    <input type="submit" name="save" value="Sauvegarder"/>
+    <input class="button" type="submit" name="save" value="Sauvegarder"/>
 
 </form>

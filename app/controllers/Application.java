@@ -5,10 +5,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import models.CalendarItem;
@@ -16,6 +18,7 @@ import models.Event;
 import models.Maraja;
 import models.Newsletter;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.IslamicChronology;
 import play.cache.Cache;
 import play.libs.Codec;
@@ -29,7 +32,7 @@ public class Application extends Controller {
 
     public static void index(int monthNumber, int page) {
 
-        Http.Cookie timeZone = request.cookies.get("timeZone");
+        Http.Cookie timeZone = request.cookies.get("timeZoneName");
         Http.Cookie latitude = request.cookies.get("latitude");
         Http.Cookie longitude = request.cookies.get("longitude");
         Http.Cookie address = request.cookies.get("address");
@@ -49,6 +52,10 @@ public class Application extends Controller {
         int year = d.get(Calendar.YEAR);
         String month = d.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.FRENCH);
         String adr = null;
+        String marajaName = null;
+        GregorianCalendar todayDate = new GregorianCalendar();
+        DateTime todayIslamic = null;
+        List<Maraja> marajas = null;
 
         if (timeZone != null && latitude != null && longitude != null && address != null
                 && maraja != null) {
@@ -56,7 +63,6 @@ public class Application extends Controller {
             Map<String, Event> ev = (Map<String, Event>) Cache.get("event");
             double lon = Double.parseDouble(longitude.value);
             double lat = Double.parseDouble(latitude.value);
-            double t = Double.parseDouble(timeZone.value) / 60.0;
             try {
                 adr = URLDecoder.decode(address.value, "utf-8");
             } catch (UnsupportedEncodingException ex) {
@@ -68,10 +74,22 @@ public class Application extends Controller {
             d.set(Calendar.DAY_OF_MONTH, day);
 
             Maraja m = Maraja.findById(Long.parseLong(maraja.value));
+            marajaName = m.name;
 
             DateTime dtISO = new DateTime(d.getTimeInMillis() + (m.days * 86400000));
+            
             DateTime dtIslamic = dtISO.withChronology(IslamicChronology.getInstance());
 
+            todayIslamic = new DateTime(todayDate.getTimeInMillis() + (m.days * 86400000)).
+                    withChronology(IslamicChronology.getInstance());
+
+
+            TimeZone tz = TimeZone.getTimeZone(timeZone.value);
+            double t = tz.getRawOffset()/3600000;
+            if(tz.inDaylightTime(new Date())){
+                t++;
+            }
+            
             PrayTime p = new PrayTime();
 
             while (day <= lastDay) {
@@ -94,8 +112,12 @@ public class Application extends Controller {
                 dtISO = new DateTime(d.getTimeInMillis() + (m.days * 86400000));
                 dtIslamic = dtISO.withChronology(IslamicChronology.getInstance());
             }
+        }else{
+            marajas = Maraja.all().fetch();
         }
-        render(calItems, month, monthNumber, year, adr, today, currentMonth);
+
+        render(calItems, month, monthNumber, year, adr, today, currentMonth,
+                marajaName,todayDate,todayIslamic,marajas);
     }
 
     public static void changeLocation() {
