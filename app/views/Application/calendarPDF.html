@@ -1,0 +1,171 @@
+
+<style type="text/css"  media="all">
+    #calendar tr td{
+        padding: 7px;
+        padding-left: 10px;
+        padding-right: 10px;
+        text-align: center;
+    }
+
+    #calendar{
+        border-collapse: collapse;
+        color: #000000;
+        width: 100%
+    }
+
+    .title{
+        color:#FFFFFF;
+        background:url("@{'/public/images/nav.png'}") repeat-x scroll 0 0 #2e2e2e;
+    }
+
+    .title td{
+        font-weight:bold;
+    }
+
+    .tr_odd{
+        background:url("@{'/public/images/nav.png'}") repeat-x scroll 0 0 #2f867f;
+    }
+
+    .tr_even{
+        background:url("@{'/public/images/nav.png'}") repeat-x scroll 0 0 #ddd;
+    }
+
+    .today{
+        font-weight: bold;
+        border: 2px black solid;
+    }
+
+    .todayEvent{
+        font-weight: bold;
+        border-top:  2px black solid;
+        border-right:  2px black solid;
+        border-left:  2px black solid;
+    }
+
+    .todayEventName{
+        border-bottom:  2px black solid;
+        border-right:  2px black solid;
+        border-left:  2px black solid;
+        color: white;
+        background:url("@{'/public/images/nav.png'}") repeat-x scroll 0 0 #257914;
+    }
+
+    .eventName{
+        color: white;
+        background:url("@{'/public/images/nav.png'}") repeat-x scroll 0 0 #257914;
+    }
+    .eventName td a{
+        text-decoration: none;
+        color: white;
+    }
+    .eventName td a:hover{
+        text-decoration: none;
+        color: white;
+    }
+</style>
+
+
+
+#{if calItems.size() > 0}
+<table id="calendar" cellpadding="5" cellspacing="0">
+    <tr class="title">
+        <td  colspan="2">
+            ${month.capFirst()}
+        </td>
+        <td>
+            Fajr
+        </td>
+        <td nowrap="nowrap">
+            L. de soleil
+        </td>
+        <td>
+            Dhuhr
+        </td>
+        <td>
+            Maghrib
+        </td>
+        <td >
+            Minuit
+        </td>
+        <td>
+            Hégirien
+        </td>
+    </tr>
+    #{list items:calItems,as:'c'}
+    #{if c.event}
+    <tr class="event tr_${c_parity}"  style="border-bottom:  none;">
+        #{/if}
+        #{else}
+    <tr class="tr_${c_parity}">
+
+        #{/else}
+        <td style="text-align: left" ${c.event == null?"":"rowspan='2'"}>
+            ${c.weekDay.capFirst()}
+    </td>
+    <td ${c.event == null?"":"rowspan='2'"}>
+        ${c_index}
+</td>
+<td>
+    ${c.fajr}
+</td>
+<td>
+    ${c.sunrise}
+</td>
+<td>
+    ${c.duhr}
+</td>
+<td>
+    ${c.maghrib}
+</td>
+<td>
+    ${c.midnight}
+</td>
+<td ${c.event == null?"":"rowspan='2'"} nowrap="nowrap">
+    ${c.hijriDay}
+    #{if c.hijriDay == 1 || c_isFirst || c_isLast}
+     - ${c.hijriMonth}
+    #{/if}
+
+</td>
+
+</tr>
+#{if c.event}
+<tr class="eventName">
+    <td colspan="5">
+        #{if c.event.link}
+        <a href="${c.event.link}">${c.event.name}</a>
+        #{/if}
+        #{else}
+        ${c.event.name}
+        #{/else}
+
+    </td>
+</tr>
+#{/if}
+#{/list}
+<tr class="title">
+    <td  colspan="2">
+        ${month.capFirst()}
+    </td>
+    <td>
+        Fajr
+    </td>
+    <td nowrap="nowrap">
+        L. de soleil
+    </td>
+    <td>
+        Dhuhr
+    </td>
+    <td  >
+        Maghrib
+    </td>
+    <td  >
+        Minuit
+    </td>
+    <td  >
+        Hégirien
+    </td>
+</tr>
+</table>
+#{/if}
+

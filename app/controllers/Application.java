@@ -1,6 +1,6 @@
 package controllers;
 
-import com.mchange.v2.lang.Coerce;
+import java.util.HashMap;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -18,12 +18,12 @@ import models.Event;
 import models.Maraja;
 import models.Newsletter;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.chrono.IslamicChronology;
 import play.cache.Cache;
 import play.libs.Codec;
 import play.mvc.*;
 import utils.PrayTime;
+import static play.modules.pdf.PDF.*;
 
 public class Application extends Controller {
 
@@ -119,6 +119,104 @@ public class Application extends Controller {
         }
 
         render(calItems, month, monthNumber, year, adr, today, currentMonth,
+                marajaName, todayDate, todayIslamic, marajas);
+    }
+
+    public static void calendarPDF(int monthNumber) {
+        Http.Cookie timeZone = request.cookies.get("timeZoneName");
+        Http.Cookie latitude = request.cookies.get("latitude");
+        Http.Cookie longitude = request.cookies.get("longitude");
+        Http.Cookie address = request.cookies.get("address");
+        Http.Cookie maraja = request.cookies.get("maraja");
+
+        List<CalendarItem> calItems = new ArrayList<CalendarItem>();
+        GregorianCalendar d = new GregorianCalendar();
+
+        int today = d.get(Calendar.DAY_OF_MONTH);
+        int currentMonth = d.get(Calendar.MONTH);
+
+        d.set(Calendar.MONTH, monthNumber);
+
+        monthNumber = d.get(Calendar.MONTH);
+        int year = d.get(Calendar.YEAR);
+        String month = d.getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.FRENCH);
+        String adr = null;
+        String marajaName = null;
+        GregorianCalendar todayDate = new GregorianCalendar();
+        DateTime todayIslamic = null;
+        List<Maraja> marajas = null;
+
+        if (timeZone != null && latitude != null && longitude != null && address != null
+                && maraja != null) {
+
+            Map<String, Event> ev = (Map<String, Event>) Cache.get("event");
+            if (ev == null) {
+                List<Event> events = Event.all().fetch();
+                for (Event event : events) {
+                    ev.put(event.day + ":" + event.month, event);
+                }
+
+                Cache.add("event", ev, "26h");
+            }
+            double lon = Double.parseDouble(longitude.value);
+            double lat = Double.parseDouble(latitude.value);
+            try {
+                adr = URLDecoder.decode(address.value, "utf-8");
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+            int lastDay = d.getActualMaximum(Calendar.DAY_OF_MONTH);
+            int day = 1;
+            d.set(Calendar.DAY_OF_MONTH, day);
+
+            Maraja m = Maraja.findById(Long.parseLong(maraja.value));
+            marajaName = m.name;
+
+            DateTime dtISO = new DateTime(d.getTimeInMillis() + (m.days * 86400000));
+
+            DateTime dtIslamic = dtISO.withChronology(IslamicChronology.getInstance());
+
+            todayIslamic = new DateTime(todayDate.getTimeInMillis() + (m.days * 86400000)).withChronology(IslamicChronology.getInstance());
+
+
+
+
+            PrayTime p = new PrayTime();
+
+            while (day <= lastDay) {
+                try {
+                    TimeZone tz = TimeZone.getTimeZone(URLDecoder.decode(timeZone.value, "utf-8"));
+                    double t = tz.getRawOffset() / 3600000;
+                    if (tz.inDaylightTime(new Date(d.getTimeInMillis()))) {
+                        t++;
+                    }
+                    String[] times = p.getPrayerTimes(d, lat, lon, t);
+                    CalendarItem c = new CalendarItem();
+                    c.weekDay = d.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.FRENCH);
+                    c.fajr = times[0];
+                    c.sunrise = times[1];
+                    c.duhr = times[2];
+                    c.maghrib = times[5];
+                    c.midnight = times[7];
+                    c.hijriDay = dtIslamic.getDayOfMonth();
+                    c.hijriMonth = Application.islamMonth[dtIslamic.getMonthOfYear() - 1];
+                    c.event = ev.get(dtIslamic.getDayOfMonth() + ":" + dtIslamic.getMonthOfYear());
+                    calItems.add(c);
+                    day++;
+                    d.set(Calendar.DAY_OF_MONTH, day);
+                    dtISO = new DateTime(d.getTimeInMillis() + (m.days * 86400000));
+                    dtIslamic = dtISO.withChronology(IslamicChronology.getInstance());
+                } catch (UnsupportedEncodingException ex) {
+                    Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        } else {
+            marajas = Maraja.all().fetch();
+        }
+        Options o = new Options();
+        o.FOOTER = "<a href='http://calendrier.al-imane.org'>calendrier.al-imane.org</a>";
+        renderPDF(o,calItems, month, monthNumber, year, adr, today, currentMonth,
                 marajaName, todayDate, todayIslamic, marajas);
     }
 

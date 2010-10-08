@@ -108,7 +108,12 @@
                     </a>
                 </span>
 
-                <br/><br/>
+                <br/>
+                <a title="Calendrier en pdf"
+                   href="@{Application.calendarPDF(monthNumber)}" rel="pdf">
+                    PDF
+                </a>
+                <br/>
                 <a href="#" onclick="$('#newsletter').slideToggle('slow');">Etre prévenu des événements par mail</a>
 
                 <div id="newsletter" style="display: none;">
